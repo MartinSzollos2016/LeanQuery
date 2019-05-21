@@ -1,41 +1,38 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace LeanQuery;
 
 use LeanMapper\Connection;
 use LeanMapper\IEntityFactory;
 use LeanMapper\IMapper;
 
-/**
- * @author Vojtěch Kohout
- */
 class DomainQueryFactory
 {
 
-	/** @var IEntityFactory */
+	/** @var \LeanMapper\IEntityFactory */
 	private $enityFactory;
 
-	/** @var Connection */
+	/** @var \LeanMapper\Connection */
 	private $connection;
 
-	/** @var IMapper */
+	/** @var \LeanMapper\IMapper */
 	private $mapper;
 
-	/** @var Hydrator */
+	/** @var \LeanQuery\Hydrator */
 	private $hydrator;
 
-	/** @var QueryHelper */
+	/** @var \LeanQuery\QueryHelper */
 	private $queryHelper;
 
-
-	/**
-	 * @param IEntityFactory $enityFactory
-	 * @param Connection $connection
-	 * @param IMapper $mapper
-	 * @param Hydrator $hydrator
-	 * @param QueryHelper $queryHelper
-	 */
-	public function __construct(IEntityFactory $enityFactory, Connection $connection, IMapper $mapper, Hydrator $hydrator, QueryHelper $queryHelper)
+	public function __construct(
+		IEntityFactory $enityFactory,
+		Connection $connection,
+		IMapper $mapper,
+		Hydrator $hydrator,
+		QueryHelper $queryHelper
+	)
 	{
 		$this->enityFactory = $enityFactory;
 		$this->connection = $connection;
@@ -44,12 +41,15 @@ class DomainQueryFactory
 		$this->queryHelper = $queryHelper;
 	}
 
-	/**
-	 * @return DomainQuery
-	 */
-	public function createQuery()
+	public function createQuery(): DomainQuery
 	{
-		return new DomainQuery($this->enityFactory, $this->connection, $this->mapper, $this->hydrator, $this->queryHelper);
+		return new DomainQuery(
+			$this->enityFactory,
+			$this->connection,
+			$this->mapper,
+			$this->hydrator,
+			$this->queryHelper
+		);
 	}
 
 }

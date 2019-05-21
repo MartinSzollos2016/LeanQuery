@@ -1,53 +1,50 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace LeanQuery;
 
-use LeanMapper\Exception\InvalidArgumentException;
 use LeanMapper\Reflection\EntityReflection;
 use LeanMapper\Reflection\Property;
 
-/**
- * @author Vojtěch Kohout
- */
 class QueryHelper
 {
 
-	const PREFIX_SEPARATOR = '__';
-
+	public const PREFIX_SEPARATOR = '__';
 
 	/**
-	 * @param EntityReflection $entityReflection
-	 * @param string $tableAlias
-	 * @param string $prefix
-	 * @internal param string $entityClass
+	 * @param \LeanMapper\Reflection\EntityReflection $entityReflection
+	 * @param string                                  $tableAlias
+	 * @param string                                  $prefix
+	 *
 	 * @return array
+	 * @internal param string $entityClass
 	 */
-	public function formatSelect(EntityReflection $entityReflection, $tableAlias, $prefix = null)
+	public function formatSelect(EntityReflection $entityReflection, string $tableAlias, ?string $prefix = null): array
 	{
 		isset($prefix) or $prefix = $tableAlias;
-		$fields = array();
+		$fields = [];
 
 		foreach ($entityReflection->getEntityProperties() as $property) {
-			if (($column = $property->getColumn()) === null) continue;
+			if (($column = $property->getColumn()) === null) {
+				continue;
+			}
 			$fields["$tableAlias.$column"] = $prefix . self::PREFIX_SEPARATOR . $column;
 		}
 
 		return $fields;
 	}
 
-	/**
-	 * @param Property $property
-	 * @param string $tableAlias
-	 * @param string $prefix
-	 * @return string
-	 * @throws InvalidArgumentException
-	 */
-	public function formatColumn(Property $property, $tableAlias, $prefix = null)
+	public function formatColumn(Property $property, string $tableAlias, ?string $prefix = null): string
 	{
 		isset($prefix) or $prefix = $tableAlias;
 
-		if (($column = $property->getColumn()) === null) {
-			throw new InvalidArgumentException("Missing low-level column for property $property.");
+		$column = $property->getColumn();
+		if ($column === null) {
+			throw new \LeanMapper\Exception\InvalidArgumentException(sprintf(
+				'Missing low-level column for property %s.',
+				$property->getName()
+			));
 		}
 
 		return $prefix . self::PREFIX_SEPARATOR . $column;

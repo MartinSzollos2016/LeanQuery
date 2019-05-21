@@ -12,10 +12,18 @@
 			"LeanQuery": ""
 		}
 	},
+	"repositories": [
+		{
+			"url": "https://github.com/MartinSzollos2016/LeanMapper.git",
+			"type": "git"
+		}
+	],
 	"require": {
+		"php": ">=7.1.0",
 		"tharos/leanmapper": "dev-master"
 	},
 	"require-dev": {
-		"nette/tester": "dev-master"
+		"nette/tester": "dev-master",
+		"ftrs/coding-standart-and-php-stan": "^0.1.2"
 	}
 }

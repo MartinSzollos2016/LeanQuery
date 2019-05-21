@@ -1,22 +1,19 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace LeanQuery;
 
-use LeanMapper\Exception\InvalidArgumentException;
-
-/**
- * @author Vojtěch Kohout
- */
 class Relationship
 {
 
-	const DIRECTION_REFERENCED = '=>';
+	public const DIRECTION_REFERENCED = '=>';
 
-	const DIRECTION_REFERENCING = '<=';
+	public const DIRECTION_REFERENCING = '<=';
 
-	const DIRECTION_BOTH = '<=>';
+	public const DIRECTION_BOTH = '<=>';
 
-	const RE_IDENTIFIER = '[a-zA-Z0-9_-]+'; // TODO: move to separate class in Lean Mapper
+	private const RE_IDENTIFIER = '[a-zA-Z0-9_-]+'; // TODO: move to separate class in Lean Mapper
 
 	/** @var string */
 	private $sourcePrefix;
@@ -39,21 +36,19 @@ class Relationship
 	/** @var string */
 	private $primaryKeyColumn;
 
-
-	/**
-	 * @param string $sourcePrefix
-	 * @param string $sourceTable
-	 * @param string $relationshipColumn
-	 * @param string $direction
-	 * @param string $targetPrefix
-	 * @param string $targetTable
-	 * @param string $primaryKeyColumn
-	 * @throws InvalidArgumentException
-	 */
-	public function __construct($sourcePrefix, $sourceTable, $relationshipColumn, $direction, $targetPrefix, $targetTable, $primaryKeyColumn)
+	public function __construct(
+		string $sourcePrefix,
+		string $sourceTable,
+		string $relationshipColumn,
+		string $direction,
+		string $targetPrefix,
+		string $targetTable,
+		string $primaryKeyColumn
+	)
 	{
-		if ($direction !== self::DIRECTION_REFERENCED and $direction !== self::DIRECTION_REFERENCING and $direction !== self::DIRECTION_BOTH) {
-			throw new InvalidArgumentException("Invalid relationship direction given: $direction");
+		if ($direction !== self::DIRECTION_REFERENCED and $direction !== self::DIRECTION_REFERENCING and $direction
+			!== self::DIRECTION_BOTH) {
+			throw new \LeanMapper\Exception\InvalidArgumentException("Invalid relationship direction given: $direction");
 		}
 		$this->sourcePrefix = $sourcePrefix;
 		$this->sourceTable = $sourceTable;
@@ -64,17 +59,15 @@ class Relationship
 		$this->primaryKeyColumn = $primaryKeyColumn;
 	}
 
-	/**
-	 * @param string $definition
-	 * @return self
-	 * @throws InvalidArgumentException
-	 */
-	public static function createFromString($definition)
+	public static function createFromString(string $definition): self
 	{
-		$matches = array();
+		$matches = [];
 		// brackets hell matching <sourcePrefix>[(<sourceTable)].<relationshipColumn><direction><targetPrefix>[(<targetTable)].<primaryKeyColumn>
-		if (!preg_match('#^\s*(' . self::RE_IDENTIFIER . ')(?:\((' . self::RE_IDENTIFIER . ')\))?\.(' . self::RE_IDENTIFIER . ')\s*(' . self::DIRECTION_REFERENCED . '|' . self::DIRECTION_REFERENCING . '|' . self::DIRECTION_BOTH . ')\s*(' . self::RE_IDENTIFIER . ')(?:\((' . self::RE_IDENTIFIER . ')\))?\.(' . self::RE_IDENTIFIER . ')\s*$#', $definition, $matches)) {
-			throw new InvalidArgumentException("Invalid relationships definition given: $definition");
+		if (preg_match('#^\s*(' . self::RE_IDENTIFIER . ')(?:\((' . self::RE_IDENTIFIER . ')\))?\.('
+				. self::RE_IDENTIFIER . ')\s*(' . self::DIRECTION_REFERENCED . '|' . self::DIRECTION_REFERENCING . '|'
+				. self::DIRECTION_BOTH . ')\s*(' . self::RE_IDENTIFIER . ')(?:\((' . self::RE_IDENTIFIER . ')\))?\.('
+				. self::RE_IDENTIFIER . ')\s*$#', $definition, $matches) === false) {
+			throw new \LeanMapper\Exception\InvalidArgumentException("Invalid relationships definition given: $definition");
 		}
 		if ($matches[4] === self::DIRECTION_REFERENCED) {
 			$direction = self::DIRECTION_REFERENCED;
@@ -94,58 +87,37 @@ class Relationship
 		);
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getSourcePrefix()
+	public function getSourcePrefix(): string
 	{
 		return $this->sourcePrefix;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getSourceTable()
+	public function getSourceTable(): string
 	{
 		return $this->sourceTable;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getRelationshipColumn()
+	public function getRelationshipColumn(): string
 	{
 		return $this->relationshipColumn;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getDirection()
+	public function getDirection(): string
 	{
 		return $this->direction;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTargetPrefix()
+	public function getTargetPrefix(): string
 	{
 		return $this->targetPrefix;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getTargetTable()
+	public function getTargetTable(): string
 	{
 		return $this->targetTable;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getPrimaryKeyColumn()
+	public function getPrimaryKeyColumn(): string
 	{
 		return $this->primaryKeyColumn;
 	}

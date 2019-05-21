@@ -1,34 +1,25 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace LeanQuery;
 
-use LeanMapper\Exception\InvalidArgumentException;
-
-/**
- * @author Vojtěch Kohout
- */
 class HydratorMeta
 {
 
 	/** @var array */
-	private $tablesByPrefixes = array();
+	private $tablesByPrefixes = [];
 
 	/** @var array */
-	private $primaryKeysByTables = array();
+	private $primaryKeysByTables = [];
 
-	/** @var array */
-	private $relationships = array();
+	/** @var array|\LeanQuery\Relationship[] */
+	private $relationships = [];
 
-
-	/**
-	 * @param string $prefix
-	 * @return string
-	 * @throws InvalidArgumentException
-	 */
-	public function getTableByPrefix($prefix)
+	public function getTableByPrefix(string $prefix): string
 	{
 		if (!array_key_exists($prefix, $this->tablesByPrefixes)) {
-			throw new InvalidArgumentException;
+			throw new \LeanMapper\Exception\InvalidArgumentException();
 		}
 		return $this->tablesByPrefixes[$prefix];
 	}
@@ -36,70 +27,58 @@ class HydratorMeta
 	/**
 	 * @return array
 	 */
-	public function getTablesByPrefixes()
+	public function getTablesByPrefixes(): array
 	{
 		return $this->tablesByPrefixes;
 	}
 
-	/**
-	 * @param string $prefix
-	 * @param string $table
-	 * @throws InvalidArgumentException
-	 */
-	public function addTablePrefix($prefix, $table)
+	public function addTablePrefix(string $prefix, string $table): void
 	{
 		if (array_key_exists($prefix, $this->tablesByPrefixes)) {
-			throw new InvalidArgumentException;
+			throw new \LeanMapper\Exception\InvalidArgumentException();
 		}
 		$this->tablesByPrefixes[$prefix] = $table;
 	}
 
-	/**
-	 * @param string $table
-	 * @return string
-	 * @throws InvalidArgumentException
-	 */
-	public function getPrimaryKeyByTable($table)
+	public function getPrimaryKeyByTable(string $table): string
 	{
 		if (!array_key_exists($table, $this->primaryKeysByTables)) {
-			throw new InvalidArgumentException;
+			throw new \LeanMapper\Exception\InvalidArgumentException();
 		}
 		return $this->primaryKeysByTables[$table];
 	}
 
-	/**
-	 * @param string $table
-	 * @param string $primaryKey
-	 * @throws InvalidArgumentException
-	 */
-	public function addPrimaryKey($table, $primaryKey)
+	public function addPrimaryKey(string $table, string $primaryKey): void
 	{
 		if (array_key_exists($table, $this->primaryKeysByTables)) {
-			throw new InvalidArgumentException;
+			throw new \LeanMapper\Exception\InvalidArgumentException();
 		}
 		$this->primaryKeysByTables[$table] = $primaryKey;
 	}
 
 	/**
 	 * @param array $filter
-	 * @return array
+	 *
+	 * @return array|\LeanQuery\Relationship[]
 	 */
-	public function getRelationships(array $filter = null)
+	public function getRelationships(?array $filter = null): array
 	{
-		return $filter === null ? $this->relationships : array_intersect_key($this->relationships, array_fill_keys($filter, true));
+		return $filter === null ? $this->relationships
+			: array_intersect_key($this->relationships, array_fill_keys($filter, true));
 	}
 
 	/**
 	 * @param string $alias
-	 * @param Relationship|string $relationship
-	 * @throws InvalidArgumentException
+	 * @param \LeanQuery\Relationship|string $relationship
 	 */
-	public function addRelationship($alias, $relationship)
+	public function addRelationship(string $alias, $relationship): void
 	{
 		if (array_key_exists($alias, $this->relationships)) {
-			throw new InvalidArgumentException;
+			throw new \LeanMapper\Exception\InvalidArgumentException();
 		}
-		$this->relationships[$alias] = $relationship instanceof Relationship ? $relationship : Relationship::createFromString($relationship);
+		$this->relationships[$alias] = $relationship instanceof Relationship
+			? $relationship
+			: Relationship::createFromString($relationship);
 	}
 
 }

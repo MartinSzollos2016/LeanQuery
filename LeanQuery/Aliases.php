@@ -1,31 +1,22 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace LeanQuery;
 
-use LeanMapper\Exception\InvalidArgumentException;
-
-/**
- * @author Vojtěch Kohout
- */
 class Aliases
 {
 
 	/** @var array */
-	private $aliases = array();
+	private $aliases = [];
 
 	/** @var array */
-	private $index = array();
+	private $index = [];
 
-
-	/**
-	 * @param string $alias
-	 * @param string $entityClass
-	 * @throws InvalidArgumentException
-	 */
-	public function addAlias($alias, $entityClass)
+	public function addAlias(string $alias, string $entityClass): void
 	{
 		if (isset($this->aliases[$alias])) {
-			throw new InvalidArgumentException("Alias $alias is already in use.");
+			throw new \LeanMapper\Exception\InvalidArgumentException("Alias $alias is already in use.");
 		}
 		$this->aliases[$alias] = $entityClass;
 		if (!array_key_exists($entityClass, $this->index)) {
@@ -33,37 +24,23 @@ class Aliases
 		}
 	}
 
-	/**
-	 * @param string $alias
-	 * @throws InvalidArgumentException
-	 * @return string
-	 */
-	public function getEntityClass($alias)
+	public function getEntityClass(string $alias): string
 	{
 		if (!$this->hasAlias($alias)) {
-			throw new InvalidArgumentException("Alias $alias was not found.");
+			throw new \LeanMapper\Exception\InvalidArgumentException("Alias $alias was not found.");
 		}
 		return $this->aliases[$alias];
 	}
 
-	/**
-	 * @param string $entityClass
-	 * @return string
-	 * @throws InvalidArgumentException
-	 */
-	public function getAlias($entityClass)
+	public function getAlias(string $entityClass): string
 	{
 		if (!array_key_exists($entityClass, $this->index)) {
-			throw new InvalidArgumentException("Alias for $entityClass was not found.");
+			throw new \LeanMapper\Exception\InvalidArgumentException("Alias for $entityClass was not found.");
 		}
 		return $this->index[$entityClass];
 	}
 
-	/**
-	 * @param string $alias
-	 * @return bool
-	 */
-	public function hasAlias($alias)
+	public function hasAlias(string $alias): bool
 	{
 		return array_key_exists($alias, $this->aliases);
 	}
