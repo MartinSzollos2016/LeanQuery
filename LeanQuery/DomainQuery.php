@@ -289,6 +289,22 @@ class DomainQuery
 		return ($entity = reset($entities)) !== false ? $entity : null;
 	}
 
+	public function limit($limit)
+	{
+		$this->cleanCache();
+
+		$this->clauses->limit = $limit;
+		return $this;
+	}
+
+	public function offset($offset)
+	{
+		$this->cleanCache();
+
+		$this->clauses->offset = $offset;
+		return $this;
+	}
+
 	////////////////////
 	////////////////////
 
