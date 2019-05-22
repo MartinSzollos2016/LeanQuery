@@ -214,26 +214,47 @@ class DomainQuery
 		return $statement;
 	}
 
-	public function getResult(string $alias): Result
+	private function buildResults()
+	{
+		$relationshipFilter = array_keys($this->clauses->select);
+		foreach ($relationshipFilter as $filteredAlias) {
+			if (array_key_exists($filteredAlias, (array)$this->relationshipTables)) {
+				$relationshipFilter[] = $this->relationshipTables[$filteredAlias][0];
+			}
+		}
+		$result = $this->createFluent()->execute();
+		$this->results = $this->hydrator->buildResultsGraph(
+			$result instanceof \Dibi\Result ? $result->setRowClass(null)->fetchAll() : [],
+			$this->hydratorMeta,
+			$relationshipFilter
+		);
+
+	}
+
+	/**
+	 * @return array|string[]
+	 */
+	public function getAliases(): array 
+	{
+		return $this->clauses->from['alias'];
+	}
+
+	public function getResults()
 	{
 		if ($this->results === null) {
-			$relationshipFilter = array_keys($this->clauses->select);
-			foreach ($relationshipFilter as $filteredAlias) {
-				if (array_key_exists($filteredAlias, (array) $this->relationshipTables)) {
-					$relationshipFilter[] = $this->relationshipTables[$filteredAlias][0];
-				}
-			}
-			$result = $this->createFluent()->execute();
-			$this->results = $this->hydrator->buildResultsGraph(
-				$result instanceof \Dibi\Result ? $result->setRowClass(null)->fetchAll() : [],
-				$this->hydratorMeta,
-				$relationshipFilter
-			);
+			$this->buildResults();
 		}
-		if (!array_key_exists($alias, $this->results)) {
+		return $this->results;
+	}
+
+	public function getResult(string $alias): Result
+	{
+		$results = $this->getResults();
+		
+		if (!array_key_exists($alias, $results)) {
 			throw new \LeanMapper\Exception\InvalidArgumentException();
 		}
-		return $this->results[$alias];
+		return $results[$alias];
 	}
 
 	/**
